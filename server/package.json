@@ -1,0 +1,11 @@
+{
+  "name": "SAP RFC WEB SERVER",
+  "type": "module",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-rfc": "^2.7.1"
+  }
+}
