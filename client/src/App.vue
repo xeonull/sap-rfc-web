@@ -8,9 +8,10 @@
       </template>
 
       <v-tabs class="app-bar__tabs" density="compact">
-        <v-tab value="one" to="/">Tables</v-tab>
-        <v-tab value="two" to="/package">Packages</v-tab>
-        <v-tab value="three" to="/docs">Documents</v-tab>
+        <v-tab value="home" to="/">Tables</v-tab>
+        <v-tab value="package" to="/package">Packages</v-tab>
+        <v-tab value="schedule" to="/schedule">Schedules</v-tab>
+        <v-tab value="docs" to="/docs">Documents</v-tab>
       </v-tabs>
 
       <AppSettings />

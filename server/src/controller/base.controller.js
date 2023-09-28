@@ -2,7 +2,10 @@ import noderfc from "node-rfc";
 
 export class SapBaseController {
   sendWithCode(content, res) {
-    if (content && (content.name === "ABAPError" || content.name === "RfcLibError")) {
+    if (
+      content &&
+      (content.name === "ABAPError" || content.name === "RfcLibError" || content.name === "WebServerError")
+    ) {
       switch (content.key) {
         case "NOT_AUTHORIZED":
           res.status(403).send(content);
@@ -20,6 +23,9 @@ export class SapBaseController {
     } else {
       res.send(content);
     }
+  }
+  sendError(error, res) {
+    res.status(400).send(error);
   }
 
   async getTableData(system_host, table_name, headers = [], filter = [], delimeter = ";", max_rows = 1000000) {

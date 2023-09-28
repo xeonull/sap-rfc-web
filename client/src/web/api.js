@@ -11,7 +11,9 @@ class WebApi {
       params.params.delimeter = params.params.delimeter ?? this.DELIMETER;
       params.params.max_rows = params.params.max_rows ?? store.tableMaxRows;
 
+      console.log("getSapData");
       const response = await axios.get(`${this.WEB_SERVER}${route}`, params);
+      console.log("data:", response);
       return response.data;
     } catch (e) {
       if (e.response) {
@@ -25,6 +27,10 @@ class WebApi {
     }
   }
 
+  getSchedule = async function (host, appset, appl) {
+    return await this.#getSapData(`/api/schedule`, { params: { host, appset, appl } });
+  };
+
   getTable = async function (host, table_name, filter) {
     return await this.#getSapData(`/api/table`, {
       params: { host, tab: table_name, filter },
@@ -36,7 +42,9 @@ class WebApi {
   };
 
   getTableFieldList = async function (host, table_name) {
-    return await this.#getSapData(`/api/table_field_list`, { params: { host, tab: table_name, max_rows: this.SYS_MAX_ROWS  } });
+    return await this.#getSapData(`/api/table_field_list`, {
+      params: { host, tab: table_name, max_rows: this.SYS_MAX_ROWS },
+    });
   };
 
   getPackage = async function (host, appset, appl, package_name) {
@@ -44,7 +52,7 @@ class WebApi {
   };
 
   getPackageList = async function (host) {
-    return await this.#getSapData(`/api/package_list`, { params: { host, max_rows: this.SYS_MAX_ROWS  } });
+    return await this.#getSapData(`/api/package_list`, { params: { host, max_rows: this.SYS_MAX_ROWS } });
   };
 
   getSystemList = async function () {
