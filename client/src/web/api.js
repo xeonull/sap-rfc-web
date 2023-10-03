@@ -1,9 +1,9 @@
-import axios from "axios";
-import { store } from "@/store/store.js";
+import axios from 'axios';
+import { store } from '@/store/store.js';
 
 class WebApi {
-  WEB_SERVER = "http://localhost:3000";
-  DELIMETER = ";";
+  WEB_SERVER = 'http://localhost:3000';
+  DELIMETER = ';';
   SYS_MAX_ROWS = 999999;
 
   async #getSapData(route, params = { params: {} }) {
@@ -11,13 +11,13 @@ class WebApi {
       params.params.delimeter = params.params.delimeter ?? this.DELIMETER;
       params.params.max_rows = params.params.max_rows ?? store.tableMaxRows;
 
-      console.log("getSapData");
+      // console.log("params:", params);
       const response = await axios.get(`${this.WEB_SERVER}${route}`, params);
-      console.log("data:", response);
+      // console.log("data:", response);
       return response.data;
     } catch (e) {
       if (e.response) {
-        if (e.response.data?.name === "ABAPError") {
+        if (e.response.data?.name === 'ABAPError') {
           const message = e.response.data?.message
             ? e.response.data?.message
             : `${e.response.data?.abapMsgV1}${e.response.data?.abapMsgV2}${e.response.data?.abapMsgV3}${e.response.data?.abapMsgV4}`;
@@ -27,8 +27,12 @@ class WebApi {
     }
   }
 
-  getSchedule = async function (host, appset, appl) {
-    return await this.#getSapData(`/api/schedule`, { params: { host, appset, appl } });
+  getPlanStatuses = async function (host) {
+    return await this.#getSapData(`/api/plan_statuses`, { params: { host } });
+  };
+
+  getSchedule = async function (host, statuses) {
+    return await this.#getSapData(`/api/schedule`, { params: { host, statuses } });
   };
 
   getTable = async function (host, table_name, filter) {

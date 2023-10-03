@@ -48,23 +48,13 @@
                 v-model:search="package_search"
                 :items="packagesListApplShort"
                 :loading="loadingFilter"></v-autocomplete>
-              <v-btn
-                class="page__tool-box__content__package-box__btn"
-                @click="loadPackageStatuses"
-                :loading="loadingTab"
-                >Load package info</v-btn
-              >
+              <v-btn class="page__tool-box__content__package-box__btn" @click="loadPackageStatuses" :loading="loadingTab">Load package info</v-btn>
             </div>
           </div>
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <!-- <div class="page-tools">
-      <v-card class="page-tools-card">
-
-      </v-card>
-    </div> -->
     <div class="page__table-box">
       <DataTable :table="normTable" :fileds="normFields" />
     </div>
@@ -72,16 +62,16 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted } from 'vue';
 
-import DataTable from "@/components/DataTable.vue";
+import DataTable from '@/components/DataTable.vue';
 
-import api from "@/web/api.js";
-import { store } from "@/store/store.js";
-import { useSapTable, useSapPackageList } from "@/composable/useSapTable.js";
-import { useNotify } from "@/composable/useNotify.js";
+import api from '@/web/api.js';
+import { store } from '@/store/store.js';
+import { useSapTable, useSapPackageList } from '@/composable/useSapTable.js';
+import { useNotify } from '@/composable/useNotify.js';
 
-const expansionPanel = ref(["tools"]);
+const expansionPanel = ref(['tools']);
 
 const loadingList = ref(false);
 const loadingTab = ref(false);
@@ -99,7 +89,7 @@ const packagesAppsetValue = ref(null);
 const packagesApplList = ref([]);
 const packagesApplValue = ref(null);
 
-const package_name = ref("");
+const package_name = ref('');
 const package_search = ref(null);
 
 const { snackbarShow, snackbarText } = useNotify();
@@ -149,7 +139,7 @@ const updateListView = (value) => {
   loadingFilter.value = true;
   try {
     packagesListApplShort.value = packagesListAppl.value.filter((e) => {
-      return (e || "").toUpperCase().indexOf((value || "").toUpperCase()) > -1;
+      return (e || '').toUpperCase().indexOf((value || '').toUpperCase()) > -1;
     });
   } finally {
     loadingFilter.value = false;
@@ -159,59 +149,48 @@ const updateListView = (value) => {
 const loadPackageStatuses = async () => {
   loadingTab.value = true;
   try {
-    const res = await api.getPackage(
-      store.systemHost,
-      packagesAppsetValue.value,
-      packagesApplValue.value,
-      package_name.value
-    );
+    const res = await api.getPackage(store.systemHost, packagesAppsetValue.value, packagesApplValue.value, package_name.value);
     const { table, fields } = useSapTable(res, true);
     [fields[0], fields[4]] = [fields[4], fields[0]]; // Меняем местами колонки 0 и 4:
-    fields.push({ title: "Duration", align: "start", key: "DURATION" });
+    fields.push({ title: 'Duration', align: 'start', key: 'DURATION' });
     [fields[5], fields[4]] = [fields[4], fields[5]]; // Меняем местами колонки 4 и 5:
-    fields[0].title = "Package";
-    fields[1].title = "Status";
-    fields[2].title = "UTC Time Start";
-    fields[3].title = "UTC Time End";
-    fields[5].title = "User";
+    fields[0].title = 'Package';
+    fields[1].title = 'Status';
+    fields[2].title = 'UTC Time Start';
+    fields[3].title = 'UTC Time End';
+    fields[5].title = 'User';
 
     table.forEach((e) => {
       // Корректируем формат дат:
-      e.TIMESTAMP = e.TIMESTAMP.replace(
-        /(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})/g,
-        "$1$2-$3$4-$5 $6:$7$8:$9"
-      );
-      e.TIMESTAMP_END = e.TIMESTAMP_END.replace(
-        /(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})/g,
-        "$1$2-$3$4-$5 $6:$7$8:$9"
-      );
+      e.TIMESTAMP = e.TIMESTAMP.replace(/(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})/g, '$1$2-$3$4-$5 $6:$7$8:$9');
+      e.TIMESTAMP_END = e.TIMESTAMP_END.replace(/(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})/g, '$1$2-$3$4-$5 $6:$7$8:$9');
       // Корректируем Статус:
       switch (e.STATUS) {
-        case "0":
-          e.STATUS = "Running";
+        case '0':
+          e.STATUS = 'Running';
           break;
-        case "1":
-          e.STATUS = "Succeeded";
+        case '1':
+          e.STATUS = 'Succeeded';
           break;
-        case "2":
-          e.STATUS = "Warning";
+        case '2':
+          e.STATUS = 'Warning';
           break;
-        case "3":
-          e.STATUS = "Failed";
+        case '3':
+          e.STATUS = 'Failed';
           break;
-        case "4":
-          e.STATUS = "Abort";
+        case '4':
+          e.STATUS = 'Abort';
           break;
         default:
-          e.STATUS = "Unknown";
+          e.STATUS = 'Unknown';
           break;
       }
       // Расчитываем продолжительность:
       const diff = new Date(e.TIMESTAMP_END) - new Date(e.TIMESTAMP);
       const days = Math.trunc(diff / (1000 * 60 * 60 * 24));
-      let day_prefix = "";
+      let day_prefix = '';
       if (days > 0) day_prefix = `${days}d `;
-      e.DURATION = day_prefix + new Date(diff).toLocaleTimeString("ru", { timeZone: "UTC" });
+      e.DURATION = day_prefix + new Date(diff).toLocaleTimeString('ru', { timeZone: 'UTC' });
     });
 
     normTable.value = table;

@@ -12,6 +12,7 @@ router.get("/table_field_list", sapTableController.getFieldList);
 router.get("/package", sapPackageController.getPackageStatuses);
 router.get("/package_list", sapPackageController.getPackages);
 router.get("/system_list", sapSystemController.getSystemCodes);
+router.get("/plan_statuses", SapScheduleController.getPlanStatuses);
 router.get("/schedule", SapScheduleController.getSchedule);
 
 export default router;

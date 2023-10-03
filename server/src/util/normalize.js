@@ -3,8 +3,10 @@ export function normalizeSapTable(rawTable) {
   const table = [];
   const fields = [];
 
+  if (!rawTable || !rawTable.FIELDS || !rawTable.ET_DATA) return { table: null, fields: null };
+
   rawTable.FIELDS.forEach((field) => {
-    fields.push({ title: field.FIELDNAME, align: "start", key: field.FIELDNAME, type: field.TYPE });
+    fields.push({ title: field.FIELDNAME, align: 'start', key: field.FIELDNAME, type: field.TYPE });
   });
 
   rawTable.ET_DATA.forEach((row) => {
@@ -22,8 +24,10 @@ export function normalizeSapTableObj(rawTable, keyField) {
   const table = {};
   const fields = {};
 
+  if (!rawTable || !rawTable.FIELDS || !rawTable.ET_DATA) return { table: null, fields: null };
+
   rawTable.FIELDS.forEach((field) => {
-    fields[field.FIELDNAME] = { title: field.FIELDNAME, align: "start", key: field.FIELDNAME, type: field.TYPE };
+    fields[field.FIELDNAME] = { title: field.FIELDNAME, align: 'start', key: field.FIELDNAME, type: field.TYPE };
   });
 
   const keys = Object.keys(fields);
@@ -38,4 +42,3 @@ export function normalizeSapTableObj(rawTable, keyField) {
 
   return { table, fields };
 }
-

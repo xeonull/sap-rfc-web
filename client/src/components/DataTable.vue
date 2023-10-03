@@ -3,6 +3,7 @@
     <v-data-table
       :headers="fileds"
       :items="table"
+      :search="search"
       v-model:items-per-page="itemsPerPage"
       v-model:page="currentPage"
       v-if="fileds.length"
@@ -20,6 +21,7 @@ import { VDataTable } from "vuetify/labs/VDataTable";
 const props = defineProps({
   table: Array,
   fileds: Array,
+  search: String,
 });
 const itemsPerPage = ref(100);
 const currentPage = ref(1);
