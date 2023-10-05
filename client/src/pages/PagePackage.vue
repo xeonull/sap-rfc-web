@@ -25,16 +25,10 @@
               label="Environment"
               variant="solo"
               density="compact"
-              :items="packagesAppsetList"
-              v-model="packagesAppsetValue"></v-select>
+              :items="environmentList"
+              v-model="environmentValue"></v-select>
 
-            <v-select
-              class="page__tool-box__content__package-box__input"
-              label="Model"
-              variant="solo"
-              density="compact"
-              :items="packagesApplList"
-              v-model="packagesApplValue"></v-select>
+            <v-select class="page__tool-box__content__package-box__input" label="Model" variant="solo" density="compact" :items="modelList" v-model="modelValue"></v-select>
 
             <div class="page__tool-box__content__package-box__name">
               <v-autocomplete
@@ -48,7 +42,7 @@
                 v-model:search="package_search"
                 :items="packagesListApplShort"
                 :loading="loadingFilter"></v-autocomplete>
-              <v-btn class="page__tool-box__content__package-box__btn" @click="loadPackageStatuses" :loading="loadingTab">Load package info</v-btn>
+              <v-btn class="page__tool-box__content__package-box__btn" @click="loadPackageTable" :loading="loadingTab">Load package info</v-btn>
             </div>
           </div>
         </v-expansion-panel-text>
@@ -68,7 +62,6 @@ import DataTable from '@/components/DataTable.vue';
 
 import api from '@/web/api.js';
 import { store } from '@/store/store.js';
-import { useSapTable, useSapPackageList } from '@/composable/useSapTable.js';
 import { useNotify } from '@/composable/useNotify.js';
 
 const expansionPanel = ref(['tools']);
@@ -83,42 +76,50 @@ const packagesList = ref([]); // Список пакетов для всех с�
 const packagesListAppl = ref([]); // Список пакетов для выбранной среды и модели
 const packagesListApplShort = ref([]); // Список отфильтрованных пакетов выбранной среды и модели
 
-const packagesAppsetList = ref([]);
-const packagesAppsetValue = ref(null);
+const environmentList = ref([]);
+const environmentValue = ref(null);
 
-const packagesApplList = ref([]);
-const packagesApplValue = ref(null);
+const modelList = ref([]);
+const modelValue = ref(null);
 
 const package_name = ref('');
 const package_search = ref(null);
 
 const { snackbarShow, snackbarText } = useNotify();
 
-/* Следим за изменением среды - меняем список моделей */
-watch(packagesAppsetValue, () => {
-  packagesApplList.value = packagesList.value
+const updateModelList = () => {
+  modelList.value = packagesList.value
     ? [
         ...packagesList.value.reduce((a, v) => {
-          if (v.APPSET_ID === packagesAppsetValue.value) a.add(v.APP_ID);
+          if (v.APPSET_ID === environmentValue.value) a.add(v.APP_ID);
           return a;
         }, new Set()),
       ]
     : null;
-  packagesApplValue.value = packagesApplList.value?.length ? packagesApplList.value[0] : null;
-});
+};
 
-/* Следим за изменением модели - меняем список пакетов */
-watch(packagesApplValue, () => {
+const updatePackageList = () => {
   packagesListAppl.value = packagesList.value
     ? [
         ...packagesList.value.reduce((a, v) => {
-          if (v.APPSET_ID === packagesAppsetValue.value && v.APP_ID === packagesApplValue.value) a.add(v.PACKAGE_ID);
+          if (v.APPSET_ID === environmentValue.value && v.APP_ID === modelValue.value) a.add(v.PACKAGE_ID);
           return a;
         }, new Set()),
       ]
     : null;
   packagesListAppl.value.sort();
   packagesListApplShort.value = packagesListAppl.value.slice();
+};
+
+/* Следим за изменением среды - меняем список моделей */
+watch(environmentValue, () => {
+  updateModelList();
+  modelValue.value = modelList.value?.length ? modelList.value[0] : null;
+});
+
+/* Следим за изменением модели - меняем список пакетов */
+watch(modelValue, () => {
+  updatePackageList();
   package_name.value = packagesListAppl.value?.length ? packagesListAppl.value[0] : null;
 });
 
@@ -127,6 +128,9 @@ watch(
   () => store.systemHost,
   () => {
     loadPackageList();
+    normTable.value.length = 0;
+    normFields.value.length = 0;
+    expansionPanel.value = ['tools']; // Expand tools expansion panel
   }
 );
 
@@ -146,55 +150,16 @@ const updateListView = (value) => {
   }
 };
 
-const loadPackageStatuses = async () => {
+const loadPackageTable = async () => {
   loadingTab.value = true;
   try {
-    const res = await api.getPackage(store.systemHost, packagesAppsetValue.value, packagesApplValue.value, package_name.value);
-    const { table, fields } = useSapTable(res, true);
-    [fields[0], fields[4]] = [fields[4], fields[0]]; // Меняем местами колонки 0 и 4:
-    fields.push({ title: 'Duration', align: 'start', key: 'DURATION' });
-    [fields[5], fields[4]] = [fields[4], fields[5]]; // Меняем местами колонки 4 и 5:
-    fields[0].title = 'Package';
-    fields[1].title = 'Status';
-    fields[2].title = 'UTC Time Start';
-    fields[3].title = 'UTC Time End';
-    fields[5].title = 'User';
-
-    table.forEach((e) => {
-      // Корректируем формат дат:
-      e.TIMESTAMP = e.TIMESTAMP.replace(/(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})/g, '$1$2-$3$4-$5 $6:$7$8:$9');
-      e.TIMESTAMP_END = e.TIMESTAMP_END.replace(/(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})\.(\d{2})(\d)\.(\d)(\d{2})/g, '$1$2-$3$4-$5 $6:$7$8:$9');
-      // Корректируем Статус:
-      switch (e.STATUS) {
-        case '0':
-          e.STATUS = 'Running';
-          break;
-        case '1':
-          e.STATUS = 'Succeeded';
-          break;
-        case '2':
-          e.STATUS = 'Warning';
-          break;
-        case '3':
-          e.STATUS = 'Failed';
-          break;
-        case '4':
-          e.STATUS = 'Abort';
-          break;
-        default:
-          e.STATUS = 'Unknown';
-          break;
-      }
-      // Расчитываем продолжительность:
-      const diff = new Date(e.TIMESTAMP_END) - new Date(e.TIMESTAMP);
-      const days = Math.trunc(diff / (1000 * 60 * 60 * 24));
-      let day_prefix = '';
-      if (days > 0) day_prefix = `${days}d `;
-      e.DURATION = day_prefix + new Date(diff).toLocaleTimeString('ru', { timeZone: 'UTC' });
-    });
-
-    normTable.value = table;
-    normFields.value = fields;
+    const content = await api.getPackage(store.systemHost, environmentValue.value, modelValue.value, package_name.value);
+    if (content.table && content.fields) {
+      normTable.value = content.table;
+      normFields.value = content.fields;
+    } else {
+      normTable.value.length = 0;
+    }
     expansionPanel.value = []; // Hide tools expansion panel
   } catch (err) {
     snackbarText.value = err.message;
@@ -208,11 +173,29 @@ const loadPackageList = async () => {
   snackbarShow.value = false;
   loadingList.value = true;
   try {
-    const res = await api.getPackageList(store.systemHost);
-    const { packages } = useSapPackageList(res);
-    packagesList.value = packages;
-    packagesAppsetList.value = [...new Set(packagesList.value.map((e) => e.APPSET_ID))];
-    packagesAppsetValue.value = packagesAppsetList.value[0];
+    const content = await api.getPackageList(store.systemHost);
+    if (content.table) {
+      packagesList.value = content.table;
+      environmentList.value = [...new Set(packagesList.value.map((e) => e.APPSET_ID))];
+      // Оставляем предыдущее значение Среды, если оно уже было выбрано ранее и также есть в обновленном списке, иначе берем первое
+      if (!environmentValue.value || environmentList.value.indexOf(environmentValue.value) === -1) {
+        // При изменении Среды список пакетов обновиться через watch
+        environmentValue.value = environmentList.value?.length ? environmentList.value[0] : null;
+      } else updateModelList();
+
+      // Оставляем предыдущее значение Модели, если оно уже было выбрано ранее и есть в обновленном списке, иначе берем первое
+      if (!modelValue.value || modelList.value.indexOf(modelValue.value) === -1) {
+        // При изменении Модели список пакетов обновиться через watch
+        modelValue.value = modelList.value?.length ? modelList.value[0] : null;
+      } else updatePackageList();
+
+      // Оставляем предыдущее значение Пакета, если оно уже было выбрано ранее и есть в обновленном списке, иначе берем первое
+      if (!package_name.value || packagesListAppl.value.indexOf(package_name.value) === -1) {
+        package_name.value = packagesListAppl.value?.length ? packagesListAppl.value[0] : null;
+      }
+    } else {
+      packagesList.value.length = 0;
+    }
   } catch (err) {
     snackbarText.value = err.message;
     snackbarShow.value = true;
@@ -260,7 +243,7 @@ onMounted(loadPackageList);
         }
 
         &__btn {
-          margin: 0 0 0 20px;
+          margin: 4px 0 0 20px;
           height: $cstm-button-height;
           background: rgb(var(--v-theme-primary));
           color: rgb(var(--v-theme-on-primary));

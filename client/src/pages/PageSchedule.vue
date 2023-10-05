@@ -32,7 +32,7 @@
                 item-value="id"
                 item-text="title"
                 v-model="planStatusesSelect"></v-select>
-              <v-btn class="page__tool-box__content__table-name-box__btn" @click="loadSchedule" :loading="loadingTab">Load table</v-btn>
+              <v-btn class="page__tool-box__content__table-name-box__btn" @click="loadSchedule" :loading="loadingTab">Load Schedule Info</v-btn>
             </div>
             <div class="page__tool-box__content__search">
               <v-text-field
@@ -84,6 +84,10 @@ watch(
   () => store.systemHost,
   () => {
     loadPlanStatuses();
+    search.value = '';
+    normTable.value.length = 0;
+    normFields.value.length = 0;
+    expansionPanel.value = ['tools']; // Expand tools expansion panel
   }
 );
 
@@ -100,7 +104,6 @@ const loadPlanStatuses = async () => {
       planStatusesSelect.value.push(planStatuses.value[0].id);
       planStatusesSelect.value.push(planStatuses.value[1].id);
     }
-    // console.log('ps:', planStatuses.value);
   } catch (err) {
     snackbarText.value = err.message;
     snackbarShow.value = true;
@@ -110,13 +113,14 @@ const loadPlanStatuses = async () => {
 };
 
 const loadSchedule = async () => {
+  search.value = '';
   snackbarShow.value = false;
   loadingTab.value = true;
   try {
-    const res = await api.getSchedule(store.systemHost, planStatusesSelect.value);
-    if (res.table && res.fields) {
-      normTable.value = res.table;
-      normFields.value = res.fields;
+    const content = await api.getSchedule(store.systemHost, planStatusesSelect.value);
+    if (content.table && content.fields) {
+      normTable.value = content.table;
+      normFields.value = content.fields;
     } else {
       normTable.value.length = 0;
     }

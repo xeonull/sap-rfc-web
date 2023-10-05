@@ -98,7 +98,7 @@ import DataTable from '@/components/DataTable.vue';
 
 import api from '@/web/api.js';
 import { store } from '@/store/store.js';
-import { useSapTable, useSapTableList, useSapOption } from '@/composable/useSapTable.js';
+import { useSapOption } from '@/composable/useSapTable.js';
 import { useNotify } from '@/composable/useNotify.js';
 
 const expansionPanel = ref(['tools']);
@@ -125,6 +125,10 @@ watch(
   () => store.systemHost,
   () => {
     loadTableList();
+    search.value = '';
+    normTable.value.length = 0;
+    normFields.value.length = 0;
+    expansionPanel.value = ['tools']; // Expand tools expansion panel
   }
 );
 
@@ -158,13 +162,14 @@ const updateListView = (value) => {
 const loadTableFields = async () => {
   loadingFilter.value = true;
   try {
-    const res = await api.getTableFieldList(store.systemHost, table_name.value);
-    const { table } = useSapTable(res);
-    table.sort((a, b) => a.POSITION - b.POSITION);
-    table.forEach((e) => {
-      e.VALUE = ''; // Используется для списка (или шаблона) значений столбца таблицы
-    });
-    tableFieldList.value = table;
+    const table = await api.getTableFieldList(store.systemHost, table_name.value);
+    // Добавляем поле VALUE, где будет храниться введенное пользователем значение столбца таблицы
+    if (table) {
+      table.forEach((e) => {
+        e.VALUE = '';
+      });
+      tableFieldList.value = table;
+    }
   } catch (err) {
     snackbarText.value = err.message;
     snackbarShow.value = true;
@@ -174,13 +179,17 @@ const loadTableFields = async () => {
 };
 
 const loadTable = async () => {
+  search.value = '';
   loadingTab.value = true;
   try {
     const { filter } = useSapOption(tableFieldList.value);
-    const res = await api.getTable(store.systemHost, table_name.value, filter);
-    const { table, fields } = useSapTable(res);
-    normTable.value = table;
-    normFields.value = fields;
+    const content = await api.getTable(store.systemHost, table_name.value, filter);
+    if (content.table && content.fields) {
+      normTable.value = content.table;
+      normFields.value = content.fields;
+    } else {
+      normTable.value.length = 0;
+    }
     expansionPanel.value = []; // Hide tools expansion panel
   } catch (err) {
     snackbarText.value = err.message;
@@ -194,8 +203,8 @@ const loadTableList = async () => {
   snackbarShow.value = false;
   loadingList.value = true;
   try {
-    const res = await api.getTableList(store.systemHost);
-    tableList.value = useSapTableList(res);
+    const table = await api.getTableList(store.systemHost);
+    if (table) tableList.value = table;
   } catch (err) {
     snackbarText.value = err.message;
     snackbarShow.value = true;

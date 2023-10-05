@@ -13,10 +13,10 @@
   </div>
 </template>
 
-<script setup>
-import { watch } from "vue";
-import { ref } from "vue";
-import { VDataTable } from "vuetify/labs/VDataTable";
+<script setup lang="ts">
+import { watch } from 'vue';
+import { ref } from 'vue';
+import { VDataTable } from 'vuetify/labs/VDataTable';
 
 const props = defineProps({
   table: Array,

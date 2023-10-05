@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted } from "vue";
 import { RouterView } from "vue-router";
 
 import AppSettings from "@/components/AppSettings.vue";
