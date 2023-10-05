@@ -28,9 +28,9 @@ export class SapBaseController {
     res.status(400).send(error);
   }
 
-  async getDomainValues(system_host, domain, lang = 'E', delimeter = DEFAULT_DELIMETER, max_rows = DEFAULT_MAX_ROWS) {
+  async pullDomainValues(system_host, domain, lang = 'E', delimeter = DEFAULT_DELIMETER, max_rows = DEFAULT_MAX_ROWS) {
     try {
-      const content = await this.getTableData(
+      const content = await this.pullTableData(
         system_host,
         'DD07T',
         ['DDTEXT', 'DOMVALUE_L'],
@@ -52,7 +52,7 @@ export class SapBaseController {
     }
   }
 
-  async getTableData(system_host, table_name, headers = [], filter = [], delimeter = DEFAULT_DELIMETER, max_rows = DEFAULT_MAX_ROWS) {
+  async pullTableData(system_host, table_name, headers = [], filter = [], delimeter = DEFAULT_DELIMETER, max_rows = DEFAULT_MAX_ROWS) {
     const client = new noderfc.Client({ DEST: system_host });
     max_rows = parseInt(max_rows);
 

@@ -1,12 +1,23 @@
-/* Normalize SAP table as array */
-export function normalizeSapTable(rawTable) {
+/* Normalize SAP table with one column as simple list */
+export function normalizeSapTableList(rawList) {
+  const list = [];
+
+  rawList.ET_DATA.forEach((line) => {
+    list.push(line.LINE);
+  });
+
+  return list;
+}
+
+/* Normalize SAP table and return 2 arrays - table and fields */
+export function normalizeSapTable(rawTable, isUseDesciptions = false) {
   const table = [];
   const fields = [];
 
   if (!rawTable || !rawTable.FIELDS || !rawTable.ET_DATA) return { table: null, fields: null };
 
   rawTable.FIELDS.forEach((field) => {
-    fields.push({ title: field.FIELDNAME, align: 'start', key: field.FIELDNAME, type: field.TYPE });
+    fields.push({ title: isUseDesciptions ? field.FIELDTEXT : field.FIELDNAME, align: 'start', key: field.FIELDNAME, type: field.TYPE });
   });
 
   rawTable.ET_DATA.forEach((row) => {
@@ -19,7 +30,7 @@ export function normalizeSapTable(rawTable) {
   return { table, fields };
 }
 
-/* Normalize SAP table as object */
+/* Normalize SAP table and return 2 objects - table and fields */
 export function normalizeSapTableObj(rawTable, keyField) {
   const table = {};
   const fields = {};

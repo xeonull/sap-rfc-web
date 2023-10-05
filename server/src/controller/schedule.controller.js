@@ -1,15 +1,14 @@
 import { SapBaseController } from './base.controller.js';
 import { normalizeSapTable, normalizeSapTableObj } from '../util/normalize.js';
 import { parseXMLTable } from '../util/parse.js';
-import { UTCtoLocal } from '../util/datetime.js';
+import { UTC_to_local } from '../util/datetime.js';
 
 class SapScheduleController extends SapBaseController {
-  planStatuses = null;
   /* Get plan table*/
-  getPlan = async (req) => {
+  pullPlan = async (req) => {
     if (!req.query.statuses || !req.query.statuses.length) return;
     let str_stat = req.query.statuses.join(',');
-    return await this.getTableData(
+    return await this.pullTableData(
       req.query.host,
       'UJ0_PLAN',
       ['PLAN_ID', 'PLAN_STATUS', 'SCHEDULE_ID', 'PLAN_PARA'],
@@ -20,11 +19,10 @@ class SapScheduleController extends SapBaseController {
   };
 
   /* Get schedules from plan table*/
-  getPlanSchedule = async (req) => {
-    // console.log("2req.query.statuses:", req.query.statuses);
+  pullPlanSchedule = async (req) => {
     if (!req.query.statuses || !req.query.statuses.length) return;
     let str_stat = req.query.statuses.join(',');
-    return await this.getTableData(
+    return await this.pullTableData(
       req.query.host,
       'UJ0_PLAN',
       ['SCHEDULE_ID'],
@@ -34,23 +32,22 @@ class SapScheduleController extends SapBaseController {
     );
   };
 
-  _getPlanStatuses = async (req) => {
-    const res = await this.getDomainValues(req.query.host, 'UJ_PLAN_STATUS', 'E', req.query.delimeter, req.query.max_rows);
-    return res;
+  pullPlanStatuses = async (req) => {
+    return await this.pullDomainValues(req.query.host, 'UJ_PLAN_STATUS', 'E', req.query.delimeter, req.query.max_rows);
   };
 
   /* Get plan statuses*/
   getPlanStatuses = async (req, res) => {
     try {
-      this.planStatuses = await this._getPlanStatuses(req);
-      this.sendWithCode(this.planStatuses, res);
+      const planStatuses = await this.pullPlanStatuses(req);
+      this.sendWithCode(planStatuses, res);
     } catch (error) {
       this.sendWithCode(error, res);
     }
   };
 
   /* Get schedules info for existing plan*/
-  getScheduleInfo = async (req, plan) => {
+  pullScheduleInfo = async (req, plan) => {
     let schedule_filter = [];
     if (!plan || !plan.ET_DATA) return;
     plan.ET_DATA.forEach((row, i) => {
@@ -62,22 +59,22 @@ class SapScheduleController extends SapBaseController {
     });
     if (schedule_filter.length === 0) schedule_filter.push(`SCHEDULE_ID IN ('')`);
 
-    return await this.getTableData(req.query.host, 'UJ0_SCHEDULE', ['SCHEDULE_ID', 'SCHEDULE_INFO'], schedule_filter, req.query.delimeter, req.query.max_rows);
+    return await this.pullTableData(req.query.host, 'UJ0_SCHEDULE', ['SCHEDULE_ID', 'SCHEDULE_INFO'], schedule_filter, req.query.delimeter, req.query.max_rows);
   };
 
   /* Get table with planning packages*/
   getSchedule = async (req, res) => {
     try {
       // Получаем данные из таблицы UJ0_PLAN для статусов PLAN_STATUS = 0 и 1
-      let content = await this.getPlan(req);
+      let content = await this.pullPlan(req);
 
       const { table, fields } = normalizeSapTable(content);
 
       // Получаем список SCHEDULE_ID из таблицы UJ0_PLAN для статусов PLAN_STATUS = 0 и 1
-      content = await this.getPlanSchedule(req);
+      content = await this.pullPlanSchedule(req);
 
       // Получаем список SCHEDULE_INFO из таблицы UJ0_SCHEDULE для полученных SCHEDULE_ID
-      content = await this.getScheduleInfo(req, content);
+      content = await this.pullScheduleInfo(req, content);
       const { table: table_schedule, fields: fields_schedule } = normalizeSapTableObj(content, 'SCHEDULE_ID');
 
       // Добавляем поле SCHEDULE_INFO в основную таблицу
@@ -120,10 +117,7 @@ class SapScheduleController extends SapBaseController {
           if (o[src]) o[fld] = o[src][fld];
         };
 
-        // console.log("table:", table);
-        // console.log("fields:", fields);
-
-        if (!this.planStatuses) this.planStatuses = await this._getPlanStatuses(req);
+        const planStatuses = await this.pullPlanStatuses(req);
 
         // Выравниваем и корректируем значения в строках таблицы
         table.forEach((row) => {
@@ -137,11 +131,11 @@ class SapScheduleController extends SapBaseController {
             if (row['SCHEDULE_INFO'] && Array.isArray(row['SCHEDULE_INFO']['SDLSTRTDT'])) row['SCHEDULE_INFO']['SDLSTRTDT'] = row['SCHEDULE_INFO']['SDLSTRTDT'][0];
 
             // Объединияем дату и время в один столбец и переводим из UTC в Local
-            row['DATETIME_START'] = UTCtoLocal(row['SCHEDULE_INFO']['SDLSTRTDT'], row['SCHEDULE_INFO']['SDLSTRTTM']);
-            row['DATETIME_END'] = UTCtoLocal(row['SCHEDULE_INFO']['LASTSTRTDT'], row['SCHEDULE_INFO']['LASTSTRTTM']);
+            row['DATETIME_START'] = UTC_to_local(row['SCHEDULE_INFO']['SDLSTRTDT'], row['SCHEDULE_INFO']['SDLSTRTTM']);
+            row['DATETIME_END'] = UTC_to_local(row['SCHEDULE_INFO']['LASTSTRTDT'], row['SCHEDULE_INFO']['LASTSTRTTM']);
           }
           // Подставляем вместо кодов текстовые значения статусов
-          row['PLAN_STATUS'] = this.planStatuses[row['PLAN_STATUS']];
+          row['PLAN_STATUS'] = planStatuses[row['PLAN_STATUS']];
 
           fileds_del.forEach((fld) => delete row[fld]);
         });
@@ -153,15 +147,11 @@ class SapScheduleController extends SapBaseController {
         fields_new.push({ key: 'DATETIME_END', title: 'End', align: 'start' });
         fields_new.push(...fileds_info);
 
-        // console.log("table_parse:", table);
-        // console.log("fields_new:", fields_new);
-
         content = { table, fields: fields_new };
       } else content = { table: null, fields: null };
       this.sendWithCode(content, res);
     } catch (error) {
       console.log('error', error);
-
       this.sendError(error, res);
     }
   };
