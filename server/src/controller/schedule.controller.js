@@ -111,7 +111,7 @@ class SapScheduleController extends SapBaseController {
           { key: 'PERIODIC', title: 'Periodic', align: 'center' },
         ];
         // Список полей, которые не требуются в конечной таблицы:
-        const fileds_del = ['PLAN_ID', 'PLAN_PARA', 'SCHEDULE_ID', 'SCHEDULE_INFO'];
+        const fields_del = ['PLAN_ID', 'PLAN_PARA', 'SCHEDULE_ID', 'SCHEDULE_INFO'];
 
         const copyFileld = (o, src, fld) => {
           if (o[src]) o[fld] = o[src][fld];
@@ -137,7 +137,7 @@ class SapScheduleController extends SapBaseController {
           // Подставляем вместо кодов текстовые значения статусов
           row['PLAN_STATUS'] = planStatuses[row['PLAN_STATUS']];
 
-          fileds_del.forEach((fld) => delete row[fld]);
+          fields_del.forEach((fld) => delete row[fld]);
         });
 
         const fields_new = [];

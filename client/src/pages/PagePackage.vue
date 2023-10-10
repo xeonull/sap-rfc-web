@@ -17,33 +17,45 @@
             </v-row>
           </template>
         </v-expansion-panel-title>
-        <v-expansion-panel-text class="page__tool-box__content">
-          <v-label class="page__tool-box__content__text">{{ `Choose Environment, Model and Package name` }}</v-label>
-          <div class="page__tool-box__content__package-box">
-            <v-select
-              class="page__tool-box__content__package-box__input"
-              label="Environment"
-              variant="solo"
-              density="compact"
-              :items="environmentList"
-              v-model="environmentValue"></v-select>
-
-            <v-select class="page__tool-box__content__package-box__input" label="Model" variant="solo" density="compact" :items="modelList" v-model="modelValue"></v-select>
-
-            <div class="page__tool-box__content__package-box__name">
-              <v-autocomplete
-                class="page__tool-box__content__package-box__input"
-                label="Package"
+        <v-expansion-panel-text class="page__tool-box__pane">
+          <div class="page__tool-box__content">
+            <div class="page__tool-box__content__left">
+              <v-label class="page__tool-box__content__left__label">{{ `Choose Environment, Model and Package name` }}</v-label>
+              <v-select
+                class="page__tool-box__content__left__input"
+                label="Environment"
                 variant="solo"
                 density="compact"
-                persistent-hint
-                :hint="normTable.length ? `Rows: ${normTable.length}` : ``"
-                v-model="package_name"
-                v-model:search="package_search"
-                :items="packagesListApplShort"
-                :loading="loadingFilter"></v-autocomplete>
-              <v-btn class="page__tool-box__content__package-box__btn" @click="loadPackageTable" :loading="loadingTab">Load package info</v-btn>
+                :items="environmentList"
+                v-model="environmentValue"></v-select>
+
+              <v-select
+                class="page__tool-box__content__left__input"
+                label="Model"
+                variant="solo"
+                density="compact"
+                :items="modelList"
+                v-model="modelValue"></v-select>
+
+              <div class="page__tool-box__content__left__wbtn-box">
+                <v-autocomplete
+                  class="page__tool-box__content__left__wbtn-box__input"
+                  label="Package"
+                  variant="solo"
+                  density="compact"
+                  persistent-hint
+                  :hint="normTable.length ? `Rows: ${normTable.length}` : ``"
+                  v-model="package_name"
+                  v-model:search="package_search"
+                  :items="packagesListApplShort"
+                  :loading="loadingFilter"></v-autocomplete>
+                <v-btn class="page__tool-box__content__left__wbtn-box__btn process" @click="loadPackageTable" :loading="loadingTab">
+                  Load package info
+                </v-btn>
+              </div>
             </div>
+
+            <div class="page__tool-box__content__right"></div>
           </div>
         </v-expansion-panel-text>
       </v-expansion-panel>
@@ -222,32 +234,47 @@ onMounted(loadPackageList);
     }
 
     &__content {
-      &__text {
-        align-items: start;
-      }
+      padding-top: 12px;
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-between;
 
-      &__package-box {
-        padding-top: 12px;
+      &__left {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        justify-content: start;
+        justify-content: space-between;
 
-        &__name {
+        &__label {
+          align-items: start;
+        }
+        &__input {
+          max-width: $cstm-input-max-width;
+        }
+
+        &__wbtn-box {
           display: flex;
           flex-direction: row;
-        }
+          align-items: flex-start;
+          justify-content: start;
+          flex-grow: 1;
 
-        &__input {
-          width: $cstm-input-max-width;
-        }
+          &__input {
+            width: $cstm-input-max-width;
+          }
 
-        &__btn {
-          margin: 4px 0 0 20px;
-          height: $cstm-button-height;
-          background: rgb(var(--v-theme-primary));
-          color: rgb(var(--v-theme-on-primary));
+          &__btn {
+            margin: 4px 0 24px 20px;
+            align-self: flex-end;
+          }
         }
+      }
+
+      &__right {
+        max-width: 600px;
+        flex-grow: 2;
+        margin-left: 16px;
+        margin-top: 2px;
       }
     }
   }

@@ -34,7 +34,6 @@ export class SapBaseController {
         system_host,
         'DD07T',
         ['DDTEXT', 'DOMVALUE_L'],
-        // ["DOMNAME EQ 'UJ_PLAN_STATUS' AND DDLANGUAGE EQ 'E'"],
         [`DOMNAME EQ '${domain}' AND DDLANGUAGE EQ '${lang}'`],
         delimeter,
         max_rows

@@ -18,13 +18,15 @@
             </v-row>
           </template>
         </v-expansion-panel-title>
-        <v-expansion-panel-text class="page__tool-box__content">
-          <div class="page__tool-box__content__option-box">
-            <div class="page__tool-box__content__table-name-label">
-              <v-label class="page__tool-box__content__text">{{ `Number of transparent tables of ${store.systemHost} system: ${tableList.length}` }}</v-label>
-              <div class="page__tool-box__content__table-name-box">
+        <v-expansion-panel-text class="page__tool-box__pane">
+          <div class="page__tool-box__content">
+            <div class="page__tool-box__content__left">
+              <v-label class="page__tool-box__content__left__label">{{
+                `Number of transparent tables of ${store.systemHost} system: ${tableList.length}`
+              }}</v-label>
+              <div class="page__tool-box__content__left__wbtn-box">
                 <v-autocomplete
-                  class="page__tool-box__content__table-name-box__input"
+                  class="page__tool-box__content__left__wbtn-box__input"
                   label="SAP Table"
                   variant="solo"
                   density="compact"
@@ -36,12 +38,17 @@
                   :loading="loadingFilter"
                   :no-data-text="table_no_data_text"></v-autocomplete>
 
-                <v-btn class="page__tool-box__content__table-name-box__btn" @click="loadTable" :loading="loadingTab">Load table</v-btn>
+                <v-btn
+                  class="page__tool-box__content__left__wbtn-box__btn process"
+                  :disabled="table_name === ''"
+                  @click="loadTable"
+                  :loading="loadingTab">
+                  Load table
+                </v-btn>
               </div>
             </div>
-            <div class="page__tool-box__content__search">
+            <div class="page__tool-box__content__right">
               <v-text-field
-                width="500px"
                 :disabled="normTable.length === 0"
                 v-model="search"
                 prepend-icon="mdi-magnify"
@@ -52,15 +59,22 @@
                 density="compact"></v-text-field>
             </div>
           </div>
-          <div class="page__tool-box__content__table-field-expand">
-            <v-btn :icon="showFieldBox ? 'mdi-chevron-up' : 'mdi-chevron-down'" @click="showFieldBox = !showFieldBox" :disabled="!tableFieldList.length" density="compact"></v-btn>
+          <!-- <div class="page__tool-box__content__table-field-expand"> -->
+          <div class="page__tool-box__additional__expand-btn">
+            <v-btn
+              :icon="showFieldBox ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+              @click="showFieldBox = !showFieldBox"
+              :disabled="!tableFieldList.length"
+              density="compact"></v-btn>
           </div>
           <v-expand-transition>
-            <div v-show="showFieldBox" class="page__tool-box__content__table-field">
-              <div class="page__tool-box__content__table-field-box">
+            <!-- <div v-show="showFieldBox" class="page__tool-box__content__table-field"> -->
+            <div v-show="showFieldBox" class="page__tool-box__additional__area">
+              <!-- <div class="page__tool-box__content__table-field-box"> -->
+              <div class="page__tool-box__additional__area__left">
                 <div v-for="fld in tableFieldList" :key="fld.FIELDNAME">
                   <v-text-field
-                    class="page__tool-box__content__table-field-box__input"
+                    class="page__tool-box__additional__area__left__input"
                     :label="fld.FIELDNAME"
                     placeholder="Input value"
                     variant="outlined"
@@ -68,12 +82,12 @@
                     density="compact" />
                 </div>
               </div>
-              <div class="page__tool-box__content__table-field-info">
+              <div class="page__tool-box__additional__area__info">
                 <v-tooltip location="right top">
                   <template v-slot:activator="{ props }">
-                    <v-icon v-bind="props" icon="mdi-information-variant" class="page__tool-box__content__table-field-info__icon" />
+                    <v-icon v-bind="props" icon="mdi-information-variant" class="page__tool-box__additional__area__info__icon" />
                   </template>
-                  <span class="page__tool-box__content__table-field-info__text">
+                  <span class="page__tool-box__additional__area__info__text">
                     <p>Use <v-icon icon="mdi-comma" /> for listing</p>
                     <p>Use <v-icon icon="mdi-asterisk" /> for masking</p>
                     <p>Use <v-icon icon="mdi-keyboard-space" /> for empty element</p>
@@ -231,58 +245,67 @@ onMounted(loadTableList);
     }
 
     &__content {
-      &__text {
-        align-items: start;
-      }
-      &__table-name-label {
+      padding-top: 12px;
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-between;
+
+      &__left {
         display: flex;
         flex-direction: column;
-        flex-grow: 1;
-      }
-      &__option-box {
-        padding-top: 12px;
-        display: flex;
-        flex-direction: row;
-      }
-      &__search {
-        max-width: 600px;
-        flex-grow: 2;
-      }
+        justify-content: space-between;
 
-      &__table-name-box {
-        padding-top: 12px;
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: start;
-        flex-grow: 1;
-        // border: 1px solid pink;
-
+        &__label {
+          align-items: start;
+        }
         &__input {
           max-width: $cstm-input-max-width;
         }
 
-        &__btn {
-          margin: 4px 0 0 20px;
-          height: $cstm-button-height;
-          background: rgb(var(--v-theme-primary));
-          color: rgb(var(--v-theme-on-primary));
+        &__wbtn-box {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          justify-content: start;
+          flex-grow: 1;
+
+          &__input {
+            width: $cstm-input-max-width;
+          }
+
+          &__btn {
+            margin: 4px 0 24px 20px;
+            align-self: flex-end;
+          }
         }
       }
-      &__table-field {
+
+      &__right {
+        max-width: 600px;
+        flex-grow: 2;
+        margin-left: 16px;
+        margin-top: 2px;
+      }
+    }
+
+    &__additional {
+      &__expand-btn {
+        display: flex;
+        justify-content: center;
+      }
+      &__area {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
         justify-content: start;
-        &-expand {
-          display: flex;
-          justify-content: center;
-        }
-        &-box {
+
+        &__left {
           padding: 5px 0 0 0;
           width: calc($cstm-input-max-width + 145px);
         }
-        &-info {
+
+        &__info {
           padding: 10px 0 0 10px;
           &__text {
             color: rgb(var(--v-theme-on-primary));
