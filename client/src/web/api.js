@@ -27,8 +27,20 @@ class WebApi {
     }
   }
 
-  getPlanStatuses = async function (host) {
-    return await this.#getSapData(`/api/plan_statuses`, { params: { host } });
+  getDocument = async function (host, appset, doc_types) {
+    return await this.#getSapData(`/api/document`, { params: { host, appset, doc_types } });
+  };
+
+  getDocumentTypes = async function (host) {
+    return await this.#getSapData(`/api/document_type`, { params: { host } });
+  };
+
+  getEnvironment = async function (host) {
+    return await this.#getSapData(`/api/environment`, { params: { host, max_rows: this.SYS_MAX_ROWS } });
+  };
+
+  getPlanStatusList = async function (host) {
+    return await this.#getSapData(`/api/plan_status`, { params: { host } });
   };
 
   getSchedule = async function (host, statuses) {

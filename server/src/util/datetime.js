@@ -4,6 +4,14 @@ export function UTC_to_local(date, time) {
   if (date.substring(0, 4) == '0000') {
     return `${date} ${time}`;
   } else {
+    //Если дата без разделителей, то добавляем их
+    if (date.length === 8) {
+      date = `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`;
+    }
+    //Если время без разделителей, то добавляем их
+    if (time.length === 6) {
+      time = `${time.substring(0, 2)}:${time.substring(2, 4)}:${time.substring(4, 6)}`;
+    }
     let datetime = new Date(`${date} ${time} UTC`);
     // return datetime.toLocaleString().replace(',', '');
     const offset = datetime.getTimezoneOffset();

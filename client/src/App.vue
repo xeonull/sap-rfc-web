@@ -11,7 +11,7 @@
         <v-tab value="home" to="/">Tables</v-tab>
         <v-tab value="package" to="/package">Packages</v-tab>
         <v-tab value="schedule" to="/schedule">Schedules</v-tab>
-        <v-tab value="docs" to="/docs">Documents</v-tab>
+        <v-tab value="document" to="/document">Documents</v-tab>
       </v-tabs>
 
       <AppSettings />
@@ -44,14 +44,14 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
-import { RouterView } from "vue-router";
+import { onMounted } from 'vue';
+import { RouterView } from 'vue-router';
 
-import AppSettings from "@/components/AppSettings.vue";
+import AppSettings from '@/components/AppSettings.vue';
 
-import api from "@/web/api.js";
-import { store } from "@/store/store.js";
-import { useNotify } from "@/composable/useNotify.js";
+import api from '@/web/api.js';
+import { store } from '@/store/store.js';
+import { useNotify } from '@/composable/useNotify.js';
 
 const { snackbarShow, snackbarText } = useNotify();
 
@@ -62,7 +62,7 @@ const loadSystems = async () => {
   } catch (err) {
     snackbarText.value = err.message;
     snackbarShow.value = true;
-    console.log("err:", err);
+    console.log('err:', err);
   }
 };
 
@@ -71,9 +71,8 @@ onMounted(loadSystems);
 
 <style lang="scss">
 @font-face {
-  font-family: "Roboto";
-  src: local("Roboto"), url("/fonts/Roboto/Roboto-Regular.woff2") format("woff2"),
-    url("/fonts/Roboto/Roboto-Regular.woff") format("woff");
+  font-family: 'Roboto';
+  src: local('Roboto'), url('/fonts/Roboto/Roboto-Regular.woff2') format('woff2'), url('/fonts/Roboto/Roboto-Regular.woff') format('woff');
   font-weight: 100;
   font-style: normal;
 }
@@ -113,5 +112,17 @@ a {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+.v-btn {
+  &.process {
+    height: $cstm-button-height !important;
+    background: rgb(var(--v-theme-primary)) !important;
+    color: rgb(var(--v-theme-on-primary)) !important;
+  }
+  &--disabled {
+    background-color: rgb(var(--v-theme-surface-variant)) !important;
+    opacity: 0.58 !important;
+  }
 }
 </style>

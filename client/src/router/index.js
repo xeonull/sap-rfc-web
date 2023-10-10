@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import('@/pages/PageSchedule.vue')
     },
     {
+      path: '/document',
+      name: 'document',
+      component: () => import('@/pages/PageDocument.vue')
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: '404',
       component: () => import('@/pages/404.vue')
