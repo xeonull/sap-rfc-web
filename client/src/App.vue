@@ -116,13 +116,26 @@ a {
 
 .v-btn {
   &.process {
-    height: $cstm-button-height !important;
-    background: rgb(var(--v-theme-primary)) !important;
-    color: rgb(var(--v-theme-on-primary)) !important;
+    &.low {
+      height: 24px;
+    }
+    &.high {
+      height: $cstm-button-height;
+    }
+    background: rgb(var(--v-theme-primary));
+    color: rgb(var(--v-theme-on-primary));
+    &[disabled] {
+      background: rgb(var(--v-theme-primary));
+      color: rgb(var(--v-theme-on-primary));
+      opacity: 0.58;
+    }
   }
-  &--disabled {
-    background-color: rgb(var(--v-theme-surface-variant)) !important;
-    opacity: 0.58 !important;
-  }
+}
+.option-input {
+  width: $cstm-input-max-width;
+}
+.filter-input {
+  max-width: $cstm-input-max-width;
+  margin-left: auto;
 }
 </style>

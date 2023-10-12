@@ -24,7 +24,7 @@
           <div class="page__tool-box__content">
             <div class="page__tool-box__content__left">
               <v-select
-                class="page__tool-box__content__left__input"
+                class="page__tool-box__content__left__input option-input"
                 label="Environment"
                 variant="solo"
                 density="compact"
@@ -32,7 +32,7 @@
                 v-model="environmentValue"></v-select>
               <div class="page__tool-box__content__left__wbtn-box">
                 <v-select
-                  class="page__tool-box__content__left__wbtn-box__input"
+                  class="page__tool-box__content__left__wbtn-box__input option-input"
                   label="Document types"
                   variant="solo"
                   density="compact"
@@ -54,7 +54,7 @@
                   </template>
                 </v-select>
                 <v-btn
-                  class="page__tool-box__content__left__wbtn-box__btn process"
+                  class="page__tool-box__content__left__wbtn-box__btn process high"
                   :disabled="docTypesSelect.length === 0"
                   @click="loadDocuments"
                   :loading="loadingTab">
@@ -64,6 +64,7 @@
             </div>
             <div class="page__tool-box__content__right">
               <v-text-field
+                class="filter-input"
                 v-model="search"
                 :disabled="normTable.length === 0"
                 prepend-icon="mdi-magnify"
@@ -219,20 +220,12 @@ onMounted(loadOptions);
         flex-direction: column;
         justify-content: space-between;
 
-        &__input {
-          max-width: $cstm-input-max-width;
-        }
-
         &__wbtn-box {
           display: flex;
           flex-direction: row;
           align-items: flex-start;
           justify-content: start;
           flex-grow: 1;
-
-          &__input {
-            width: $cstm-input-max-width;
-          }
 
           &__btn {
             margin: 4px 0 24px 20px;
@@ -244,7 +237,8 @@ onMounted(loadOptions);
       &__right {
         max-width: 600px;
         flex-grow: 2;
-        margin-left: 16px;
+        margin-left: auto;
+        margin-right: 4px;
         margin-top: 2px;
       }
     }

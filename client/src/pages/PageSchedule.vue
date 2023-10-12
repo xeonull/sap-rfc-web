@@ -23,7 +23,7 @@
             <div class="page__tool-box__content__option-box">
               <div class="page__tool-box__content__option-box__wbtn-box">
                 <v-select
-                  class="page__tool-box__content__option-box__wbtn-box__input"
+                  class="page__tool-box__content__option-box__wbtn-box__input option-input"
                   label="Statuses"
                   variant="solo"
                   density="compact"
@@ -34,7 +34,7 @@
                   item-text="title"
                   v-model="planStatusesSelect"></v-select>
                 <v-btn
-                  class="page__tool-box__content__option-box__wbtn-box__btn process"
+                  class="page__tool-box__content__option-box__wbtn-box__btn process high"
                   @click="loadSchedule"
                   :disabled="planStatusesSelect.length === 0"
                   :loading="loadingTab"
@@ -44,6 +44,7 @@
             </div>
             <div class="page__tool-box__content__search">
               <v-text-field
+                class="filter-input"
                 v-model="search"
                 :disabled="normTable.length === 0"
                 prepend-icon="mdi-magnify"
@@ -176,16 +177,9 @@ onMounted(loadPlanStatuses);
           justify-content: start;
           flex-grow: 1;
 
-          &__input {
-            width: $cstm-input-max-width;
-          }
-
           &__btn {
             margin: 4px 0 24px 20px;
             align-self: flex-end;
-            // height: $cstm-button-height;
-            // background: rgb(var(--v-theme-primary));
-            // color: rgb(var(--v-theme-on-primary));
           }
         }
       }

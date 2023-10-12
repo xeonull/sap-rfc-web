@@ -22,7 +22,7 @@
             <div class="page__tool-box__content__left">
               <v-label class="page__tool-box__content__left__label">{{ `Choose Environment, Model and Package name` }}</v-label>
               <v-select
-                class="page__tool-box__content__left__input"
+                class="page__tool-box__content__left__input option-input"
                 label="Environment"
                 variant="solo"
                 density="compact"
@@ -30,7 +30,7 @@
                 v-model="environmentValue"></v-select>
 
               <v-select
-                class="page__tool-box__content__left__input"
+                class="page__tool-box__content__left__input option-input"
                 label="Model"
                 variant="solo"
                 density="compact"
@@ -39,7 +39,7 @@
 
               <div class="page__tool-box__content__left__wbtn-box">
                 <v-autocomplete
-                  class="page__tool-box__content__left__wbtn-box__input"
+                  class="page__tool-box__content__left__wbtn-box__input option-input"
                   label="Package"
                   variant="solo"
                   density="compact"
@@ -49,7 +49,11 @@
                   v-model:search="package_search"
                   :items="packagesListApplShort"
                   :loading="loadingFilter"></v-autocomplete>
-                <v-btn class="page__tool-box__content__left__wbtn-box__btn process" @click="loadPackageTable" :loading="loadingTab">
+                <v-btn
+                  class="page__tool-box__content__left__wbtn-box__btn process high"
+                  :disabled="!package_name"
+                  @click="loadPackageTable"
+                  :loading="loadingTab">
                   Load package info
                 </v-btn>
               </div>
@@ -248,9 +252,6 @@ onMounted(loadPackageList);
         &__label {
           align-items: start;
         }
-        &__input {
-          max-width: $cstm-input-max-width;
-        }
 
         &__wbtn-box {
           display: flex;
@@ -258,10 +259,6 @@ onMounted(loadPackageList);
           align-items: flex-start;
           justify-content: start;
           flex-grow: 1;
-
-          &__input {
-            width: $cstm-input-max-width;
-          }
 
           &__btn {
             margin: 4px 0 24px 20px;

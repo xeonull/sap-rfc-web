@@ -21,12 +21,12 @@
         <v-expansion-panel-text class="page__tool-box__pane">
           <div class="page__tool-box__content">
             <div class="page__tool-box__content__left">
-              <v-label class="page__tool-box__content__left__label">{{
-                `Number of transparent tables of ${store.systemHost} system: ${tableList.length}`
-              }}</v-label>
+              <v-label class="page__tool-box__content__left__label">
+                {{ `Number of transparent tables of ${store.systemHost} system: ${tableList.length}` }}
+              </v-label>
               <div class="page__tool-box__content__left__wbtn-box">
                 <v-autocomplete
-                  class="page__tool-box__content__left__wbtn-box__input"
+                  class="page__tool-box__content__left__wbtn-box__input option-input"
                   label="SAP Table"
                   variant="solo"
                   density="compact"
@@ -39,8 +39,8 @@
                   :no-data-text="table_no_data_text"></v-autocomplete>
 
                 <v-btn
-                  class="page__tool-box__content__left__wbtn-box__btn process"
-                  :disabled="table_name === ''"
+                  class="page__tool-box__content__left__wbtn-box__btn process high"
+                  :disabled="!table_name"
                   @click="loadTable"
                   :loading="loadingTab">
                   Load table
@@ -49,6 +49,7 @@
             </div>
             <div class="page__tool-box__content__right">
               <v-text-field
+                class="filter-input"
                 :disabled="normTable.length === 0"
                 v-model="search"
                 prepend-icon="mdi-magnify"
@@ -59,7 +60,6 @@
                 density="compact"></v-text-field>
             </div>
           </div>
-          <!-- <div class="page__tool-box__content__table-field-expand"> -->
           <div class="page__tool-box__additional__expand-btn">
             <v-btn
               :icon="showFieldBox ? 'mdi-chevron-up' : 'mdi-chevron-down'"
@@ -68,18 +68,10 @@
               density="compact"></v-btn>
           </div>
           <v-expand-transition>
-            <!-- <div v-show="showFieldBox" class="page__tool-box__content__table-field"> -->
             <div v-show="showFieldBox" class="page__tool-box__additional__area">
-              <!-- <div class="page__tool-box__content__table-field-box"> -->
               <div class="page__tool-box__additional__area__left">
                 <div v-for="fld in tableFieldList" :key="fld.FIELDNAME">
-                  <v-text-field
-                    class="page__tool-box__additional__area__left__input"
-                    :label="fld.FIELDNAME"
-                    placeholder="Input value"
-                    variant="outlined"
-                    v-model="fld.VALUE"
-                    density="compact" />
+                  <v-text-field :label="fld.FIELDNAME" placeholder="Input value" variant="outlined" v-model="fld.VALUE" density="compact" />
                 </div>
               </div>
               <div class="page__tool-box__additional__area__info">
@@ -259,9 +251,6 @@ onMounted(loadTableList);
         &__label {
           align-items: start;
         }
-        &__input {
-          max-width: $cstm-input-max-width;
-        }
 
         &__wbtn-box {
           display: flex;
@@ -269,10 +258,6 @@ onMounted(loadTableList);
           align-items: flex-start;
           justify-content: start;
           flex-grow: 1;
-
-          &__input {
-            width: $cstm-input-max-width;
-          }
 
           &__btn {
             margin: 4px 0 24px 20px;
