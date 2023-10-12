@@ -42,6 +42,7 @@ class SapScheduleController extends SapBaseController {
       const planStatuses = await this.pullPlanStatuses(req);
       this.sendWithCode(planStatuses, res);
     } catch (error) {
+      console.log('error', error);
       this.sendWithCode(error, res);
     }
   };
@@ -59,7 +60,14 @@ class SapScheduleController extends SapBaseController {
     });
     if (schedule_filter.length === 0) schedule_filter.push(`SCHEDULE_ID IN ('')`);
 
-    return await this.pullTableData(req.query.host, 'UJ0_SCHEDULE', ['SCHEDULE_ID', 'SCHEDULE_INFO'], schedule_filter, req.query.delimeter, req.query.max_rows);
+    return await this.pullTableData(
+      req.query.host,
+      'UJ0_SCHEDULE',
+      ['SCHEDULE_ID', 'SCHEDULE_INFO'],
+      schedule_filter,
+      req.query.delimeter,
+      req.query.max_rows
+    );
   };
 
   /* Get table with planning packages*/
@@ -128,14 +136,15 @@ class SapScheduleController extends SapBaseController {
           });
           if (row['SCHEDULE_INFO']) {
             // Дополнительная проверка для поля SDLSTRTDT, т.к. в XML оно может встретиться 2 раза, т.е. будет массивом после parse
-            if (row['SCHEDULE_INFO'] && Array.isArray(row['SCHEDULE_INFO']['SDLSTRTDT'])) row['SCHEDULE_INFO']['SDLSTRTDT'] = row['SCHEDULE_INFO']['SDLSTRTDT'][0];
+            if (row['SCHEDULE_INFO'] && Array.isArray(row['SCHEDULE_INFO']['SDLSTRTDT']))
+              row['SCHEDULE_INFO']['SDLSTRTDT'] = row['SCHEDULE_INFO']['SDLSTRTDT'][0];
 
             // Объединияем дату и время в один столбец и переводим из UTC в Local
             row['DATETIME_START'] = UTC_to_local(row['SCHEDULE_INFO']['SDLSTRTDT'], row['SCHEDULE_INFO']['SDLSTRTTM']);
             row['DATETIME_END'] = UTC_to_local(row['SCHEDULE_INFO']['LASTSTRTDT'], row['SCHEDULE_INFO']['LASTSTRTTM']);
           }
           // Подставляем вместо кодов текстовые значения статусов
-          row['PLAN_STATUS'] = planStatuses[row['PLAN_STATUS']];
+          if (planStatuses) row['PLAN_STATUS'] = planStatuses[row['PLAN_STATUS']];
 
           fields_del.forEach((fld) => delete row[fld]);
         });

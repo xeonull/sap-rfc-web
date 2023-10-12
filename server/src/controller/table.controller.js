@@ -15,6 +15,7 @@ class SapTableController extends SapBaseController {
       const table_and_fields = normalizeSapTable(content);
       this.sendWithCode(table_and_fields, res);
     } catch (error) {
+      console.log('error', error);
       this.sendWithCode(error, res);
     }
   };
@@ -29,6 +30,7 @@ class SapTableController extends SapBaseController {
       const list = normalizeSapTableList(content);
       this.sendWithCode(list, res);
     } catch (error) {
+      console.log('error', error);
       this.sendWithCode(error, res);
     }
   };
@@ -48,6 +50,7 @@ class SapTableController extends SapBaseController {
       table.sort((a, b) => a.POSITION - b.POSITION);
       this.sendWithCode(table, res);
     } catch (error) {
+      console.log('error', error);
       this.sendWithCode(error, res);
     }
   };

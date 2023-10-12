@@ -29,62 +29,52 @@ export class SapBaseController {
   }
 
   async pullDomainValues(system_host, domain, lang = 'E', delimeter = DEFAULT_DELIMETER, max_rows = DEFAULT_MAX_ROWS) {
-    try {
-      const content = await this.pullTableData(
-        system_host,
-        'DD07T',
-        ['DDTEXT', 'DOMVALUE_L'],
-        [`DOMNAME EQ '${domain}' AND DDLANGUAGE EQ '${lang}'`],
-        delimeter,
-        max_rows
-      );
-      const o = {};
-      content.ET_DATA.forEach((row) => {
-        const line = row.LINE.split(content.DELIMITER);
-        if (line && line[0] && line[1]) o[line[1]] = line[0];
-      });
+    const content = await this.pullTableData(
+      system_host,
+      'DD07T',
+      ['DDTEXT', 'DOMVALUE_L'],
+      [`DOMNAME EQ '${domain}' AND DDLANGUAGE EQ '${lang}'`],
+      delimeter,
+      max_rows
+    );
+    const o = {};
+    content.ET_DATA.forEach((row) => {
+      const line = row.LINE.split(content.DELIMITER);
+      if (line && line[0] && line[1]) o[line[1]] = line[0];
+    });
 
-      return o;
-    } catch (err) {
-      console.error(err);
-      return err;
-    }
+    return o;
   }
 
   async pullTableData(system_host, table_name, headers = [], filter = [], delimeter = DEFAULT_DELIMETER, max_rows = DEFAULT_MAX_ROWS) {
     const client = new noderfc.Client({ DEST: system_host });
     max_rows = parseInt(max_rows);
 
-    try {
-      await client.open();
+    await client.open();
 
-      const rowskips = 0;
-      const options = [];
-      const fields = [];
+    const rowskips = 0;
+    const options = [];
+    const fields = [];
 
-      if (filter instanceof Array)
-        filter.forEach((line) => {
-          options.push({ TEXT: line });
-        });
-
-      if (headers instanceof Array)
-        headers.forEach((f) => {
-          fields.push({ FIELDNAME: f });
-        });
-
-      const result = await client.call('RFC_READ_TABLE', {
-        QUERY_TABLE: table_name,
-        OPTIONS: options,
-        USE_ET_DATA_4_RETURN: 'X',
-        FIELDS: fields,
-        ROWSKIPS: rowskips,
-        DELIMITER: delimeter,
-        ROWCOUNT: max_rows,
+    if (filter instanceof Array)
+      filter.forEach((line) => {
+        options.push({ TEXT: line });
       });
-      return result;
-    } catch (err) {
-      console.error(err);
-      return err;
-    }
+
+    if (headers instanceof Array)
+      headers.forEach((f) => {
+        fields.push({ FIELDNAME: f });
+      });
+
+    const result = await client.call('RFC_READ_TABLE', {
+      QUERY_TABLE: table_name,
+      OPTIONS: options,
+      USE_ET_DATA_4_RETURN: 'X',
+      FIELDS: fields,
+      ROWSKIPS: rowskips,
+      DELIMITER: delimeter,
+      ROWCOUNT: max_rows,
+    });
+    return result;
   }
 }
