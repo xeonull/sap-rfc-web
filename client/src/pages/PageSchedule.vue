@@ -12,7 +12,10 @@
               <v-col cols="4" class="d-flex justify-start"> Schedule Options </v-col>
               <v-col cols="8">
                 <v-fade-transition leave-absolute>
-                  <span v-if="!expanded" class="page__tool-box__title__collapse_text">{{ search ? `Filter: '${search}'` : '' }}</span>
+                  <span v-if="!expanded" class="text-tip">
+                    <span class="text-tip__item"><span class="text-tip__label">Statuses:</span> {{ planStatusesSelect_text }}</span>
+                    <span class="text-tip__item" v-if="!!search"><span class="text-tip__label">Filter:</span> "{{ search }}"</span>
+                  </span>
                 </v-fade-transition>
               </v-col>
             </v-row>
@@ -66,7 +69,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 
 import DataTable from '@/components/DataTable.vue';
 
@@ -98,6 +101,30 @@ watch(
     expansionPanel.value = ['tools']; // Expand tools expansion panel
   }
 );
+
+const planStatusesSelect_text = computed(() => {
+  if (planStatusesSelect.value.length === 0) return 'No statuses';
+  const max_num = 3;
+  let extra_num = 0;
+  const str = planStatusesSelect.value.reduce((a, v, i) => {
+    if (i < max_num) {
+      const title = planStatuses.value.find((e) => e.id === v).title;
+      if (i === 0) {
+        return title;
+      } else {
+        return `${a}, ${title}`;
+      }
+    } else {
+      extra_num++;
+      return a;
+    }
+  }, '');
+  if (extra_num > 0) {
+    return `${str} (+${extra_num} more)`;
+  } else {
+    return str;
+  }
+});
 
 const loadPlanStatuses = async () => {
   snackbarShow.value = false;
@@ -133,6 +160,7 @@ const loadSchedule = async () => {
     } else {
       normTable.value.length = 0;
     }
+    expansionPanel.value = []; // Hide tools expansion panel
   } catch (err) {
     snackbarText.value = err.message;
     snackbarShow.value = true;
@@ -152,10 +180,6 @@ onMounted(loadPlanStatuses);
     margin-bottom: 10px;
     &__title {
       min-height: $cstm-expansion-panel-title-min-height;
-      &__collapse_text {
-        color: rgba(var(--v-theme-secondary), 0.5);
-        white-space: nowrap;
-      }
     }
 
     &__content {

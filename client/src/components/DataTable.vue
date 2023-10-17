@@ -7,7 +7,7 @@
       v-model:items-per-page="itemsPerPage"
       v-model:page="currentPage"
       v-if="fileds.length"
-      height="77vh"
+      height="calc(100vh - 174px)"
       fixed-header
       class="elevation-1"></v-data-table>
   </div>

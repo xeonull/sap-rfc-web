@@ -82,10 +82,12 @@ onMounted(loadSystems);
   background-color: rgb(var(--v-theme-background));
 }
 
-a {
-  color: rgb(var(--v-theme-text));
-  text-decoration: none;
+/* Скрываем глобальный скролл */
+html::-webkit-scrollbar {
+  display: none;
 }
+
+/* Стиль для верхнего бара с меню и общими настройками приложения */
 .app-bar {
   &__title {
     color: rgb(var(--v-theme-on-primary));
@@ -105,15 +107,14 @@ a {
     margin-top: 22px;
   }
 }
+
+/* Стиль для всплывающего сообщения */
 .snackbar {
   color: rgb(var(--v-theme-on-primary)) !important;
   background: rgb(var(--v-theme-error)) !important;
 }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
+/* Стиль для кнопки */
 .v-btn {
   &.process {
     &.low {
@@ -131,11 +132,28 @@ a {
     }
   }
 }
+
+/* Стиль для текстового блока с параметрами */
 .option-input {
   width: $cstm-input-max-width;
 }
+
+/* Стиль для текстового блока поиска */
 .filter-input {
   max-width: $cstm-input-max-width;
   margin-left: auto;
+}
+
+/* Стиль для текстовой подсказки, которая отбражается, когда панель с настройками свернута */
+.text-tip {
+  color: rgba(var(--v-theme-secondary), 0.7);
+  white-space: nowrap;
+
+  &__item:not(:last-child) {
+    margin-right: 20px;
+  }
+  &__label {
+    filter: brightness(80%);
+  }
 }
 </style>

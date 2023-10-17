@@ -12,7 +12,10 @@
               <v-col cols="4" class="d-flex justify-start"> Table Options </v-col>
               <v-col cols="8">
                 <v-fade-transition leave-absolute>
-                  <span v-if="!expanded" class="page__tool-box__title__tab_name">{{ table_name }}{{ search ? ` and Filter: '${search}'` : '' }}</span>
+                  <span v-if="!expanded" class="text-tip">
+                    <span class="text-tip__item"><span class="text-tip__label">Table:</span> {{ table_name }}</span>
+                    <span class="text-tip__item" v-if="!!search"><span class="text-tip__label">Filter:</span> "{{ search }}"</span>
+                  </span>
                 </v-fade-transition>
               </v-col>
             </v-row>
@@ -230,10 +233,6 @@ onMounted(loadTableList);
     margin-bottom: 10px;
     &__title {
       min-height: $cstm-expansion-panel-title-min-height;
-      &__tab_name {
-        color: rgba(var(--v-theme-secondary), 0.5);
-        white-space: nowrap;
-      }
     }
 
     &__content {

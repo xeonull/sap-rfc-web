@@ -12,8 +12,10 @@
               <v-col cols="4" class="d-flex justify-start"> Document Options </v-col>
               <v-col cols="8">
                 <v-fade-transition leave-absolute>
-                  <span v-if="!expanded" class="page__tool-box__title__collapse_text">
-                    Environment: {{ environmentValue }}{{ search ? ` and Filter: '${search}'` : '' }}
+                  <span v-if="!expanded" class="text-tip">
+                    <span class="text-tip__item"><span class="text-tip__label">Environment:</span> {{ environmentValue }} </span>
+                    <span class="text-tip__item"><span class="text-tip__label">Types:</span> {{ docTypesSelect_text }}</span>
+                    <span class="text-tip__item" v-if="!!search"><span class="text-tip__label">Filter:</span> "{{ search }}"</span>
                   </span>
                 </v-fade-transition>
               </v-col>
@@ -86,7 +88,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, nextTick } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 
 import DataTable from '@/components/DataTable.vue';
 
@@ -123,6 +125,31 @@ watch(
     expansionPanel.value = ['tools']; // Expand tools expansion panel
   }
 );
+
+const docTypesSelect_text = computed(() => {
+  if (docTypesSelect.value.length === docTypes.value.length) return 'All types';
+  else if (docTypesSelect.value.length === 0) return 'No types';
+  const max_num = 2;
+  let extra_num = 0;
+  const str = docTypesSelect.value.reduce((a, v, i) => {
+    if (i < max_num) {
+      const title = docTypes.value.find((e) => e.id === v).title;
+      if (i === 0) {
+        return title;
+      } else {
+        return `${a}, ${title}`;
+      }
+    } else {
+      extra_num++;
+      return a;
+    }
+  }, '');
+  if (extra_num > 0) {
+    return `${str} (+${extra_num} more)`;
+  } else {
+    return str;
+  }
+});
 
 const docTypesToggle = async () => {
   if (docTypesSelect.value.length === docTypes.value.length) {
@@ -183,6 +210,7 @@ const loadDocuments = async () => {
     } else {
       normTable.value.length = 0;
     }
+    expansionPanel.value = []; // Hide tools expansion panel
   } catch (err) {
     snackbarText.value = err.message;
     snackbarShow.value = true;
@@ -202,10 +230,6 @@ onMounted(loadOptions);
     margin-bottom: 10px;
     &__title {
       min-height: $cstm-expansion-panel-title-min-height;
-      &__collapse_text {
-        color: rgba(var(--v-theme-secondary), 0.5);
-        white-space: nowrap;
-      }
     }
 
     &__content {
