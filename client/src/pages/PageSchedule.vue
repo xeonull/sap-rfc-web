@@ -4,12 +4,12 @@
       <v-progress-circular :size="50" color="blue" indeterminate></v-progress-circular>
     </v-overlay>
 
-    <v-expansion-panels v-model="expansionPanel">
-      <v-expansion-panel class="page__tool-box" value="tools">
-        <v-expansion-panel-title class="page__tool-box__title">
+    <v-expansion-panels v-model="expansionPanel" class="page__block">
+      <v-expansion-panel class="tool-pane" value="tools">
+        <v-expansion-panel-title class="tool-pane__title">
           <template v-slot:default="{ expanded }">
             <v-row no-gutters>
-              <v-col cols="4" class="d-flex justify-start"> Schedule Options </v-col>
+              <v-col cols="4"> Schedule Options </v-col>
               <v-col cols="8">
                 <v-fade-transition leave-absolute>
                   <span v-if="!expanded" class="text-tip">
@@ -21,12 +21,12 @@
             </v-row>
           </template>
         </v-expansion-panel-title>
-        <v-expansion-panel-text class="page__tool-box__pane">
-          <div class="page__tool-box__content">
-            <div class="page__tool-box__content__option-box">
-              <div class="page__tool-box__content__option-box__wbtn-box">
+        <v-expansion-panel-text>
+          <div class="tool-pane__content general-box">
+            <div class="general-box__left">
+              <div class="input-with-button-box">
                 <v-select
-                  class="page__tool-box__content__option-box__wbtn-box__input option-input"
+                  class="input-with-button-box__input option-input"
                   label="Statuses"
                   variant="solo"
                   density="compact"
@@ -37,7 +37,8 @@
                   item-text="title"
                   v-model="planStatusesSelect"></v-select>
                 <v-btn
-                  class="page__tool-box__content__option-box__wbtn-box__btn process high"
+                  class="input-with-button-box__button primary-button"
+                  cstm-height
                   @click="loadSchedule"
                   :disabled="planStatusesSelect.length === 0"
                   :loading="loadingTab"
@@ -45,7 +46,7 @@
                 >
               </div>
             </div>
-            <div class="page__tool-box__content__search">
+            <div class="general-box__right">
               <v-text-field
                 class="filter-input"
                 v-model="search"
@@ -62,7 +63,7 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <div class="page__table-box">
+    <div class="page__block">
       <DataTable :table="normTable" :fileds="normFields" :search="search" />
     </div>
   </div>
@@ -172,49 +173,4 @@ const loadSchedule = async () => {
 onMounted(loadPlanStatuses);
 </script>
 
-<style scoped lang="scss">
-.page {
-  margin: 10px;
-
-  &__tool-box {
-    margin-bottom: 10px;
-    &__title {
-      min-height: $cstm-expansion-panel-title-min-height;
-    }
-
-    &__content {
-      padding-top: 12px;
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      justify-content: space-between;
-
-      &__option-box {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-
-        &__wbtn-box {
-          display: flex;
-          flex-direction: row;
-          align-items: flex-start;
-          justify-content: start;
-          flex-grow: 1;
-
-          &__btn {
-            margin: 4px 0 24px 20px;
-            align-self: flex-end;
-          }
-        }
-      }
-
-      &__search {
-        max-width: 600px;
-        flex-grow: 2;
-        margin-left: 16px;
-        margin-top: 2px;
-      }
-    }
-  }
-}
-</style>
+<style lang="scss"></style>

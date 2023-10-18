@@ -4,7 +4,6 @@
       <v-app-bar-title class="app-bar__title">SAP_RFC</v-app-bar-title>
       <template v-slot:image>
         <v-img class="app-bar__img"></v-img>
-        <!-- <v-img gradient="to top right, red, blue"></v-img> -->
       </template>
 
       <v-tabs class="app-bar__tabs" density="compact">
@@ -15,8 +14,6 @@
       </v-tabs>
 
       <AppSettings />
-      <!-- 
-      -->
       <v-select
         class="app-bar__system-select"
         variant="solo"
@@ -69,91 +66,4 @@ const loadSystems = async () => {
 onMounted(loadSystems);
 </script>
 
-<style lang="scss">
-@font-face {
-  font-family: 'Roboto';
-  src: local('Roboto'), url('/fonts/Roboto/Roboto-Regular.woff2') format('woff2'), url('/fonts/Roboto/Roboto-Regular.woff') format('woff');
-  font-weight: 100;
-  font-style: normal;
-}
-
-:root {
-  font-family: Roboto, Helvetica, Arial, sans-serif !important;
-  background-color: rgb(var(--v-theme-background));
-}
-
-/* Скрываем глобальный скролл */
-html::-webkit-scrollbar {
-  display: none;
-}
-
-/* Стиль для верхнего бара с меню и общими настройками приложения */
-.app-bar {
-  &__title {
-    color: rgb(var(--v-theme-on-primary));
-  }
-  &__tabs {
-    position: absolute;
-    left: 180px;
-    max-height: 70px;
-    color: rgb(var(--v-theme-on-primary));
-  }
-  &__img {
-    background: linear-gradient(to right, rgb(var(--v-theme-bg-head)), rgb(var(--v-theme-bg-head-lighten)));
-  }
-  &__system-select {
-    max-width: $cstm-input-min-width;
-    margin-right: 12px;
-    margin-top: 22px;
-  }
-}
-
-/* Стиль для всплывающего сообщения */
-.snackbar {
-  color: rgb(var(--v-theme-on-primary)) !important;
-  background: rgb(var(--v-theme-error)) !important;
-}
-
-/* Стиль для кнопки */
-.v-btn {
-  &.process {
-    &.low {
-      height: 24px;
-    }
-    &.high {
-      height: $cstm-button-height;
-    }
-    background: rgb(var(--v-theme-primary));
-    color: rgb(var(--v-theme-on-primary));
-    &[disabled] {
-      background: rgb(var(--v-theme-primary));
-      color: rgb(var(--v-theme-on-primary));
-      opacity: 0.58;
-    }
-  }
-}
-
-/* Стиль для текстового блока с параметрами */
-.option-input {
-  width: $cstm-input-max-width;
-}
-
-/* Стиль для текстового блока поиска */
-.filter-input {
-  max-width: $cstm-input-max-width;
-  margin-left: auto;
-}
-
-/* Стиль для текстовой подсказки, которая отбражается, когда панель с настройками свернута */
-.text-tip {
-  color: rgba(var(--v-theme-secondary), 0.7);
-  white-space: nowrap;
-
-  &__item:not(:last-child) {
-    margin-right: 20px;
-  }
-  &__label {
-    filter: brightness(80%);
-  }
-}
-</style>
+<style lang="scss"></style>

@@ -3,13 +3,14 @@
     <v-overlay class="align-center justify-center" persistent v-model="loadingList">
       <v-progress-circular :size="50" color="blue" indeterminate></v-progress-circular>
     </v-overlay>
-    <v-expansion-panels v-model="expansionPanel">
-      <v-expansion-panel class="page__tool-box" value="tools">
-        <v-expansion-panel-title class="page__tool-box__title">
+
+    <v-expansion-panels v-model="expansionPanel" class="page__block">
+      <v-expansion-panel class="tool-pane" value="tools">
+        <v-expansion-panel-title class="tool-pane__title">
           <template v-slot:default="{ expanded }">
             <v-row no-gutters>
-              <v-col cols="4" class="d-flex justify-start"> Package Options </v-col>
-              <v-col cols="8">
+              <v-col cols="3"> Package Options </v-col>
+              <v-col cols="9">
                 <v-fade-transition leave-absolute>
                   <span v-if="!expanded" class="text-tip">
                     <span class="text-tip__item"><span class="text-tip__label">Environment:</span> {{ environmentValue }}</span>
@@ -21,29 +22,23 @@
             </v-row>
           </template>
         </v-expansion-panel-title>
-        <v-expansion-panel-text class="page__tool-box__pane">
-          <div class="page__tool-box__content">
-            <div class="page__tool-box__content__left">
-              <v-label class="page__tool-box__content__left__label">{{ `Choose Environment, Model and Package name` }}</v-label>
+        <v-expansion-panel-text>
+          <div class="tool-pane__content general-box">
+            <div class="general-box__left">
+              <v-label>{{ `Choose Environment, Model and Package name` }}</v-label>
               <v-select
-                class="page__tool-box__content__left__input option-input"
+                class="option-input"
                 label="Environment"
                 variant="solo"
                 density="compact"
                 :items="environmentList"
                 v-model="environmentValue"></v-select>
 
-              <v-select
-                class="page__tool-box__content__left__input option-input"
-                label="Model"
-                variant="solo"
-                density="compact"
-                :items="modelList"
-                v-model="modelValue"></v-select>
+              <v-select class="option-input" label="Model" variant="solo" density="compact" :items="modelList" v-model="modelValue"></v-select>
 
-              <div class="page__tool-box__content__left__wbtn-box">
+              <div class="input-with-button-box">
                 <v-autocomplete
-                  class="page__tool-box__content__left__wbtn-box__input option-input"
+                  class="option-input"
                   label="Package"
                   variant="solo"
                   density="compact"
@@ -54,7 +49,8 @@
                   :items="packagesListApplShort"
                   :loading="loadingFilter"></v-autocomplete>
                 <v-btn
-                  class="page__tool-box__content__left__wbtn-box__btn process high"
+                  class="input-with-button-box__button primary-button"
+                  cstm-height
                   :disabled="!package_name"
                   @click="loadPackageTable"
                   :loading="loadingTab">
@@ -63,13 +59,13 @@
               </div>
             </div>
 
-            <div class="page__tool-box__content__right"></div>
+            <div class="general-box__right"></div>
           </div>
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <div class="page__table-box">
+    <div class="page__block">
       <DataTable :table="normTable" :fileds="normFields" />
     </div>
   </div>
@@ -227,53 +223,4 @@ const loadPackageList = async () => {
 onMounted(loadPackageList);
 </script>
 
-<style scoped lang="scss">
-.page {
-  margin: 10px;
-
-  &__tool-box {
-    margin-bottom: 10px;
-    &__title {
-      min-height: $cstm-expansion-panel-title-min-height;
-    }
-
-    &__content {
-      padding-top: 12px;
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      justify-content: space-between;
-
-      &__left {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-
-        &__label {
-          align-items: start;
-        }
-
-        &__wbtn-box {
-          display: flex;
-          flex-direction: row;
-          align-items: flex-start;
-          justify-content: start;
-          flex-grow: 1;
-
-          &__btn {
-            margin: 4px 0 24px 20px;
-            align-self: flex-end;
-          }
-        }
-      }
-
-      &__right {
-        max-width: 600px;
-        flex-grow: 2;
-        margin-left: 16px;
-        margin-top: 2px;
-      }
-    }
-  }
-}
-</style>
+<style lang="scss"></style>

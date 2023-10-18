@@ -4,16 +4,16 @@
       <v-progress-circular :size="50" color="blue" indeterminate></v-progress-circular>
     </v-overlay>
 
-    <v-expansion-panels v-model="expansionPanel">
-      <v-expansion-panel class="page__tool-box" value="tools">
-        <v-expansion-panel-title class="page__tool-box__title">
+    <v-expansion-panels v-model="expansionPanel" class="page__block">
+      <v-expansion-panel class="tool-pane" value="tools">
+        <v-expansion-panel-title class="tool-pane__title">
           <template v-slot:default="{ expanded }">
             <v-row no-gutters>
-              <v-col cols="4" class="d-flex justify-start"> Table Options </v-col>
+              <v-col cols="4"> Table Options </v-col>
               <v-col cols="8">
                 <v-fade-transition leave-absolute>
-                  <span v-if="!expanded" class="text-tip">
-                    <span class="text-tip__item"><span class="text-tip__label">Table:</span> {{ table_name }}</span>
+                  <span v-if="!expanded" class="tool-pane__text text-tip">
+                    <span class="text-tip__item" v-if="table_name"><span class="text-tip__label">Table:</span> {{ table_name }}</span>
                     <span class="text-tip__item" v-if="!!search"><span class="text-tip__label">Filter:</span> "{{ search }}"</span>
                   </span>
                 </v-fade-transition>
@@ -21,15 +21,15 @@
             </v-row>
           </template>
         </v-expansion-panel-title>
-        <v-expansion-panel-text class="page__tool-box__pane">
-          <div class="page__tool-box__content">
-            <div class="page__tool-box__content__left">
-              <v-label class="page__tool-box__content__left__label">
+        <v-expansion-panel-text>
+          <div class="tool-pane__content general-box">
+            <div class="general-box__left">
+              <v-label>
                 {{ `Number of transparent tables of ${store.systemHost} system: ${tableList.length}` }}
               </v-label>
-              <div class="page__tool-box__content__left__wbtn-box">
+              <div class="input-with-button-box">
                 <v-autocomplete
-                  class="page__tool-box__content__left__wbtn-box__input option-input"
+                  class="input-with-button-box__input option-input"
                   label="SAP Table"
                   variant="solo"
                   density="compact"
@@ -42,7 +42,8 @@
                   :no-data-text="table_no_data_text"></v-autocomplete>
 
                 <v-btn
-                  class="page__tool-box__content__left__wbtn-box__btn process high"
+                  class="input-with-button-box__button primary-button"
+                  cstm-height
                   :disabled="!table_name"
                   @click="loadTable"
                   :loading="loadingTab">
@@ -50,7 +51,7 @@
                 </v-btn>
               </div>
             </div>
-            <div class="page__tool-box__content__right">
+            <div class="general-box__right">
               <v-text-field
                 class="filter-input"
                 :disabled="normTable.length === 0"
@@ -63,7 +64,7 @@
                 density="compact"></v-text-field>
             </div>
           </div>
-          <div class="page__tool-box__additional__expand-btn">
+          <div class="additional-btn">
             <v-btn
               :icon="showFieldBox ? 'mdi-chevron-up' : 'mdi-chevron-down'"
               @click="showFieldBox = !showFieldBox"
@@ -71,18 +72,18 @@
               density="compact"></v-btn>
           </div>
           <v-expand-transition>
-            <div v-show="showFieldBox" class="page__tool-box__additional__area">
-              <div class="page__tool-box__additional__area__left">
+            <div v-show="showFieldBox" class="additional-box">
+              <div class="additional-box__left">
                 <div v-for="fld in tableFieldList" :key="fld.FIELDNAME">
                   <v-text-field :label="fld.FIELDNAME" placeholder="Input value" variant="outlined" v-model="fld.VALUE" density="compact" />
                 </div>
               </div>
-              <div class="page__tool-box__additional__area__info">
+              <div class="additional-box__right">
                 <v-tooltip location="right top">
                   <template v-slot:activator="{ props }">
-                    <v-icon v-bind="props" icon="mdi-information-variant" class="page__tool-box__additional__area__info__icon" />
+                    <v-icon v-bind="props" icon="mdi-information-variant" />
                   </template>
-                  <span class="page__tool-box__additional__area__info__text">
+                  <span class="additional-box__info-text">
                     <p>Use <v-icon icon="mdi-comma" /> for listing</p>
                     <p>Use <v-icon icon="mdi-asterisk" /> for masking</p>
                     <p>Use <v-icon icon="mdi-keyboard-space" /> for empty element</p>
@@ -94,7 +95,8 @@
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-    <div class="page__table-box">
+
+    <div class="page__block">
       <DataTable :table="normTable" :fileds="normFields" :search="search" />
     </div>
   </div>
@@ -225,79 +227,4 @@ const loadTableList = async () => {
 onMounted(loadTableList);
 </script>
 
-<style scoped lang="scss">
-.page {
-  margin: 10px;
-
-  &__tool-box {
-    margin-bottom: 10px;
-    &__title {
-      min-height: $cstm-expansion-panel-title-min-height;
-    }
-
-    &__content {
-      padding-top: 12px;
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      justify-content: space-between;
-
-      &__left {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-
-        &__label {
-          align-items: start;
-        }
-
-        &__wbtn-box {
-          display: flex;
-          flex-direction: row;
-          align-items: flex-start;
-          justify-content: start;
-          flex-grow: 1;
-
-          &__btn {
-            margin: 4px 0 24px 20px;
-            align-self: flex-end;
-          }
-        }
-      }
-
-      &__right {
-        max-width: 600px;
-        flex-grow: 2;
-        margin-left: 16px;
-        margin-top: 2px;
-      }
-    }
-
-    &__additional {
-      &__expand-btn {
-        display: flex;
-        justify-content: center;
-      }
-      &__area {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: start;
-
-        &__left {
-          padding: 5px 0 0 0;
-          width: calc($cstm-input-max-width + 145px);
-        }
-
-        &__info {
-          padding: 10px 0 0 10px;
-          &__text {
-            color: rgb(var(--v-theme-on-primary));
-            font-weight: lighter;
-          }
-        }
-      }
-    }
-  }
-}
-</style>
+<style lang="scss"></style>
