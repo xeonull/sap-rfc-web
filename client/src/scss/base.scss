@@ -37,6 +37,10 @@ html::-webkit-scrollbar {
             height: $cstm-button-height;
         }
     }
+
+    &.secondary-button {
+        color: rgb(var(--v-theme-secondary));
+    }
 }
 
 /* Стиль для текстового блока с параметрами */

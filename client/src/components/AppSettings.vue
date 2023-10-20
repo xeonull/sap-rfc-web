@@ -1,48 +1,47 @@
 <template>
-  <v-menu :close-on-content-click="false" open-on-hover>
-    <template v-slot:activator="{ props }">
-      <v-btn class="settings-btn" v-bind="props" icon="mdi:mdi-cog" />
-    </template>
-
-    <v-card class="settings-content" min-width="200">
-      <template v-slot:append>
-        <v-switch
-          density="compact"
-          class="settings-content__theme-switch"
-          v-model="store.isDarkTheme"
-          :label="`${store.isDarkTheme ? 'Dark' : 'Light'} theme`"></v-switch>
-        <!-- <v-switch true-icon="mdi:mdi-weather-night" false-icon="mdi:mdi-weather-sunny" @change="toggleTheme"></v-switch> -->
-        <v-text-field variant="underlined" label="Max Rows" v-model="store.tableMaxRows" type="number" ></v-text-field>
+  <div class="settings">
+    <v-switch
+      class="settings__item"
+      true-icon="mdi:mdi-weather-night"
+      density="comfortable"
+      false-icon="mdi:mdi-weather-sunny"
+      v-model="store.isDarkTheme"
+      color="secondary"></v-switch>
+    <v-menu :close-on-content-click="false" open-on-hover>
+      <template v-slot:activator="{ props }">
+        <v-btn class="settings__item secondary-button" v-bind="props" icon="mdi:mdi-cog" />
       </template>
-    </v-card>
-  </v-menu>
+
+      <v-card class="settings-content" min-width="200">
+        <template v-slot:append>
+          <v-text-field variant="underlined" label="Max Rows" v-model="store.tableMaxRows" type="number"></v-text-field>
+        </template>
+      </v-card>
+    </v-menu>
+  </div>
 </template>
 
 <script setup>
-import { useTheme } from "vuetify";
-import { store } from "@/store/store.js";
-import { watch } from "vue";
+import { useTheme } from 'vuetify';
+import { store } from '@/store/store.js';
+import { watch } from 'vue';
 const theme = useTheme();
 
 watch(
   () => store.isDarkTheme,
-  (val) => (theme.global.name.value = val ? "corpDarkTheme" : "corpLightTheme")
+  (val) => (theme.global.name.value = val ? 'corpDarkTheme' : 'corpLightTheme')
 );
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .settings {
-  &-btn {
-    margin-right: 8px;
-    color: rgb(var(--v-theme-secondary)) !important;
+  display: flex;
+  &__item {
+    margin-top: 22px;
+    margin-right: 12px;
   }
-  &-content {
-    padding-right: 12px;
-
-    &__theme-switch {
-      margin-top: 12px;
-      margin-right: 12px;
-    }
-  }
+}
+.settings-content {
+  padding: 16px 12px 0 0 !important;
 }
 </style>
